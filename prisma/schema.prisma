@@ -1,0 +1,216 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model District {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  User      User[]
+}
+
+model Region {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  User      User[]
+}
+
+model Session {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  ip        String
+  data      Json
+}
+
+model User {
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  id         String   @id @default(uuid())
+  name       String
+  phone      String   @unique
+  email      String   @unique
+  password   String
+  role       Role
+  districtId String
+  regionId   String
+
+  district District  @relation(fields: [districtId], references: [id])
+  region   Region    @relation(fields: [regionId], references: [id])
+  Session  Session[]
+}
+
+model Level {
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  id        String    @id @default(uuid())
+  name      String
+  Product   Product[] @relation("LevelProduct")
+  Master    Master[]  @relation("LevelMaster")
+  Order     Order[]
+}
+
+model Brand {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  Tool      Tool[]
+}
+
+model Size {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  Tool      Tool[]
+}
+
+model Capacity {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  Tool      Tool[]
+}
+
+model Tool {
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Int
+  quantity    Int
+  code        Int
+  isActive    Boolean  @default(true)
+  image       String
+  brandId     String
+  capacityId  String
+  sizeId      String
+  orderId     String?
+
+  brand    Brand     @relation(fields: [brandId], references: [id])
+  capacity Capacity  @relation(fields: [capacityId], references: [id])
+  size     Size      @relation(fields: [sizeId], references: [id])
+  Product  Product[] @relation("ToolProduct")
+  Master   Master[]  @relation("ToolMaster")
+  Order    Order?    @relation(fields: [orderId], references: [id])
+  orders   Order[]   @relation("OrderTool")
+}
+
+model Product {
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  id              String   @id @default(uuid())
+  name            String
+  isActive        Boolean @default(true)
+  image           String?
+  minWorkingHours Int
+  price_hourly    Int
+  price_daily     Int
+
+  tools  Tool[]   @relation("ToolProduct")
+  levels Level[]  @relation("LevelProduct")
+  Master Master[] @relation("ProductMaster")
+}
+
+model Master {
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  id              String   @id @default(uuid())
+  fullname        String
+  phone           String
+  isActive        Boolean @default(true)
+  year            Int
+  minWorkingHours Int
+  price_hourly    Int
+  price_daily     Int
+  experience      Int
+  image           String
+  passportImage   String
+  star            Int?
+  about           String?
+  orderId         String?
+
+  products Product[] @relation("ProductMaster")
+  tools    Tool[]    @relation("ToolMaster")
+  levels   Level[]   @relation("LevelMaster")
+  Order    Order?    @relation(fields: [orderId], references: [id])
+  orders   Order[]   @relation("OrderMaster")
+  comments Comment[] @relation("CommentMaster")
+}
+
+model Order {
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  id                String      @id @default(uuid())
+  levelId           String?
+  count             Int?
+  quantity          Int?
+  measure           Measure?
+  tCount            Int?
+  total             Int?
+  location          Json?
+  addres            String?
+  date              DateTime
+  paymentType       PaymentType
+  withDelivery      Boolean
+  commentToDelivery String?
+  status            OrderStatus
+
+  Product_level Level?    @relation(fields: [levelId], references: [id])
+  masters       Master[] @relation("OrderMaster")
+  tools         Tool[]   @relation("OrderTool")
+  Tool          Tool[]
+  Master        Master[]
+}
+
+model Comment {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(uuid())
+  message   String
+  star      Int
+  masters   Master[] @relation("CommentMaster")
+}
+
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+  VIEWER_ADMIN
+  USER_FIZ
+  USER_YUR
+}
+
+enum Measure {
+  DAY
+  HOUR
+}
+
+enum PaymentType {
+  CARD
+  CACHE
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
+  CANCELED
+}
