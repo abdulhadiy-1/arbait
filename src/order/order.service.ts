@@ -6,14 +6,14 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { Request } from 'express';
 
 @Injectable()
 export class OrderService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createOrderDto: CreateOrderDto) {
+  async create(createOrderDto: CreateOrderDto, req: Request) {
     const { masters, tools, ...rest } = createOrderDto;
-
     const data: any = { ...rest };
 
     if (masters?.length) {
@@ -55,16 +55,19 @@ export class OrderService {
 
       data.tools = { connect: tools.map((id) => ({ id })) };
     }
+    let userId = req['user-id'];
 
     const createdOrder = await this.prisma.order.create({
-      data: { ...data, status: 'PENDING' },
+      data: { ...data, status: 'PENDING', userId },
     });
 
     return createdOrder;
   }
 
-  async findAll() {
+  async findAll(req: Request) {
+    let userId = req['user-id'];
     return this.prisma.order.findMany({
+      where: { userId },
       include: {
         masters: true,
 
@@ -73,9 +76,11 @@ export class OrderService {
     });
   }
 
-  async findOne(id: string) {
-    const order = await this.prisma.order.findUnique({
-      where: { id },
+  async findOne(id: string, req: Request) {
+    let userId = req['user-id'];
+
+    const order = await this.prisma.order.findFirst({
+      where: { id, userId },
 
       include: {
         masters: true,
@@ -89,10 +94,11 @@ export class OrderService {
     return order;
   }
 
-  async update(id: string, updateOrderDto: UpdateOrderDto) {
+  async update(id: string, updateOrderDto: UpdateOrderDto, req: Request) {
     const { masters, tools, ...rest } = updateOrderDto;
+    let userId = req['user-id'];
 
-    const order = await this.prisma.order.findUnique({ where: { id } });
+    const order = await this.prisma.order.findFirst({ where: { id, userId } });
     if (!order) throw new BadRequestException('Order not found');
 
     const data: any = { ...rest };
@@ -154,7 +160,11 @@ export class OrderService {
 
     return updatedOrder;
   }
-  async remove(id: string) {
+  async remove(id: string, req: Request) {
+    let userId = req['user-id'];
+
+    const order = await this.prisma.order.findFirst({ where: { id, userId } });
+    if (!order) throw new BadRequestException('Order not found');
     await this.prisma.order.delete({ where: { id } });
 
     return { message: 'Order deleted' };

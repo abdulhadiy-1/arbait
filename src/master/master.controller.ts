@@ -7,16 +7,23 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { MasterService } from './master.service';
 import { CreateMasterDto } from './dto/create-master.dto';
 import { UpdateMasterDto } from './dto/update-master.dto';
 import { ApiQuery } from '@nestjs/swagger';
+import { RoleD } from 'src/auth/decorators/roles.decorstor';
+import { AuthGuard } from 'src/auth-middleware/auth-middleware.guard';
+import { RoleGuard } from 'src/role/role.guard';
+import { Role } from '@prisma/client';
 
 @Controller('master')
 export class MasterController {
   constructor(private readonly masterService: MasterService) {}
-
+  @RoleD(Role.ADMIN)
+  @UseGuards(RoleGuard)
+  @UseGuards(AuthGuard)
   @Post()
   create(@Body() createMasterDto: CreateMasterDto) {
     return this.masterService.create(createMasterDto);
@@ -59,7 +66,12 @@ export class MasterController {
     @Query('star_from') star_from: string,
     @Query('star_to') star_to: string,
   ) {
-    const isActive = isActiveRaw === 'true' ? true : isActiveRaw === 'false' ? false : undefined;
+    const isActive =
+      isActiveRaw === 'true'
+        ? true
+        : isActiveRaw === 'false'
+          ? false
+          : undefined;
     return this.masterService.findAll(
       +page,
       +limit,
@@ -86,11 +98,16 @@ export class MasterController {
     return this.masterService.findOne(id);
   }
 
+  @RoleD(Role.ADMIN, Role.SUPER_ADMIN)
+  @UseGuards(RoleGuard)
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMasterDto: UpdateMasterDto) {
     return this.masterService.update(id, updateMasterDto);
   }
-
+  @RoleD(Role.ADMIN)
+  @UseGuards(RoleGuard)
+  @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.masterService.remove(id);

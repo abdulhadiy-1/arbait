@@ -65,6 +65,7 @@ model User {
   district District? @relation(fields: [districtId], references: [id])
   region   Region    @relation(fields: [regionId], references: [id])
   Session  Session[]
+  Order    Order[]
 }
 
 model Level {
@@ -185,6 +186,7 @@ model Order {
   updatedAt         DateTime    @updatedAt
   id                String      @id @default(uuid())
   levelId           String?
+  user              User        @relation(fields: [userId], references: [id])
   count             Int?
   quantity          Int?
   measure           Measure?
@@ -203,6 +205,7 @@ model Order {
   tools         Tool[]   @relation("OrderTool")
   Tool          Tool[]
   Master        Master[]
+  userId        String
 }
 
 model Comment {

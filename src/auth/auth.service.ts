@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateCompanyDto } from './dto/create-auth.dto2';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-totp.options = { digits: 5, step: 300 };
+totp.options = { digits: 5, step: 500 };
 @Injectable()
 export class AuthService {
   constructor(
@@ -46,7 +46,7 @@ export class AuthService {
       data: {
         ...createAuthDto,
         password: hash,
-        role: 'USER_FIZ',
+        role: 'ADMIN',
         status: 'PANDING',
       },
     });
