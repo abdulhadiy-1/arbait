@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { DistrictService } from './district.service';
 import { CreateDistrictDto } from './dto/create-district.dto';
 import { UpdateDistrictDto } from './dto/update-district.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('district')
 export class DistrictController {
@@ -11,10 +12,28 @@ export class DistrictController {
   create(@Body() createDistrictDto: CreateDistrictDto) {
     return this.districtService.create(createDistrictDto);
   }
-
+  
   @Get()
-  findAll() {
-    return this.districtService.findAll();
+ @ApiQuery({
+    name: 'page',
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+  })
+  findAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('filter') filter: string,
+  ) {
+    return this.districtService.findAll(+page, +limit, filter);
   }
 
   @Get(':id')

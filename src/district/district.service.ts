@@ -11,8 +11,16 @@ export class DistrictService {
     return district;
   }
 
-  async findAll() {
-    let districts = await this.client.district.findMany();
+  async findAll(page: number, limit: number, filter: string) {
+    let take = limit || 10;
+    let skip = page ? (page - 1) * limit : 0;
+    let where: any = {}
+    if(filter){
+      where.name = {
+        startsWith: filter
+      }
+    }
+    let districts = await this.client.district.findMany({where, skip, take});
     return districts;
   }
 

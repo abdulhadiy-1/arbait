@@ -11,8 +11,16 @@ export class SizeService {
     return size;
   }
 
-  async findAll() {
-    let sizes = await this.client.size.findMany();
+  async findAll(page: number, limit: number, filter: string) {
+    let take = limit || 10;
+    let skip = page ? (page - 1) * take : 0;
+    let where: any = {};
+    if (filter) {
+      where.name = {
+        startsWith: filter,
+      };
+    }
+    let sizes = await this.client.size.findMany({where, skip, take});
     return sizes;
   }
 

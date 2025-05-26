@@ -11,8 +11,16 @@ export class BrandService {
     return brand;
   }
 
-  async findAll() {
-    let brands = await this.client.brand.findMany();
+  async findAll(page: number, limit: number, filter: string) {
+    let take = limit || 10
+    let skip = page ? ( page - 1 ) * take : 0
+    let where: any= {}
+    if(filter){
+      where.name = {
+        startsWith: filter
+      }
+    }
+    let brands = await this.client.brand.findMany({where, take, skip});
     return brands;
   }
 

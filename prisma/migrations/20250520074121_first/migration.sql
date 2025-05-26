@@ -10,6 +10,9 @@ CREATE TYPE "PaymentType" AS ENUM ('CARD', 'CACHE');
 -- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'IN_PROGRESS', 'DONE', 'CANCELED');
 
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('PANDING', 'ACTIVR');
+
 -- CreateTable
 CREATE TABLE "District" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -52,8 +55,16 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" "Role" NOT NULL,
-    "districtId" TEXT NOT NULL,
+    "districtId" TEXT,
     "regionId" TEXT NOT NULL,
+    "directorName" TEXT,
+    "inn" TEXT,
+    "mfo" TEXT,
+    "p_c" TEXT,
+    "bank" TEXT,
+    "oked" TEXT,
+    "adres" TEXT,
+    "status" "Status" NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -286,7 +297,7 @@ CREATE INDEX "_CommentMaster_B_index" ON "_CommentMaster"("B");
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_districtId_fkey" FOREIGN KEY ("districtId") REFERENCES "District"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_districtId_fkey" FOREIGN KEY ("districtId") REFERENCES "District"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_regionId_fkey" FOREIGN KEY ("regionId") REFERENCES "Region"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

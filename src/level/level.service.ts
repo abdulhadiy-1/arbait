@@ -11,8 +11,16 @@ export class LevelService {
     return level;
   }
 
-  async findAll() {
-    let levels = await this.client.level.findMany();
+  async findAll(page: number, limit: number, filter: string) {
+    let take = limit || 10;
+    let skip = page ? (page - 1) * limit : 0;
+    let where: any = {};
+    if (filter) {
+      where.name = {
+        startsWith: filter,
+      };
+    }
+    let levels = await this.client.level.findMany({where, take, skip});
     return levels;
   }
 

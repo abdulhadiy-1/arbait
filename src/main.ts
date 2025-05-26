@@ -11,6 +11,8 @@ async function bootstrap() {
     .setTitle('Arbait')
     .setDescription('The people and tools shop')
     .setVersion('1.0')
+    .addSecurityRequirements("bearer", ['bearer'])
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

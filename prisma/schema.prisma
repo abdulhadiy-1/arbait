@@ -39,18 +39,26 @@ model Session {
 }
 
 model User {
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  id         String   @id @default(uuid())
-  name       String
-  phone      String   @unique
-  email      String   @unique
-  password   String
-  role       Role
-  districtId String
-  regionId   String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  id           String   @id @default(uuid())
+  name         String
+  phone        String   @unique
+  email        String   @unique
+  password     String
+  role         Role
+  districtId   String?
+  regionId     String
+  directorName String?
+  inn          String?
+  mfo          String?
+  p_c          String?
+  bank         String?
+  oked         String?
+  adres        String?
+  status       Status
 
-  district District  @relation(fields: [districtId], references: [id])
+  district District? @relation(fields: [districtId], references: [id])
   region   Region    @relation(fields: [regionId], references: [id])
   Session  Session[]
 }
@@ -61,7 +69,7 @@ model Level {
   id        String    @id @default(uuid())
   name      String
   Product   Product[] @relation("LevelProduct")
-  Master    Master[]  @relation("LevelMaster")
+  Master    Master[]
   Order     Order[]
 }
 
@@ -97,7 +105,7 @@ model Tool {
   description String?
   price       Int
   quantity    Int
-  code        Int
+  code        String
   isActive    Boolean  @default(true)
   image       String
   brandId     String
@@ -119,7 +127,7 @@ model Product {
   updatedAt       DateTime @updatedAt
   id              String   @id @default(uuid())
   name            String
-  isActive        Boolean @default(true)
+  isActive        Boolean  @default(true)
   image           String?
   minWorkingHours Int
   price_hourly    Int
@@ -131,12 +139,12 @@ model Product {
 }
 
 model Master {
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  id              String   @id @default(uuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  id              String    @id @default(uuid())
   fullname        String
-  phone           String
-  isActive        Boolean @default(true)
+  phone           String    @unique
+  isActive        Boolean   @default(true)
   year            Int
   minWorkingHours Int
   price_hourly    Int
@@ -147,13 +155,13 @@ model Master {
   star            Int?
   about           String?
   orderId         String?
-
-  products Product[] @relation("ProductMaster")
-  tools    Tool[]    @relation("ToolMaster")
-  levels   Level[]   @relation("LevelMaster")
-  Order    Order?    @relation(fields: [orderId], references: [id])
-  orders   Order[]   @relation("OrderMaster")
-  comments Comment[] @relation("CommentMaster")
+  levelId         String?
+  products        Product[] @relation("ProductMaster")
+  tools           Tool[]    @relation("ToolMaster")
+  Order           Order?    @relation(fields: [orderId], references: [id])
+  orders          Order[]   @relation("OrderMaster")
+  comments        Comment[] @relation("CommentMaster")
+  Level           Level?     @relation(fields: [levelId], references: [id])
 }
 
 model Order {
@@ -174,7 +182,7 @@ model Order {
   commentToDelivery String?
   status            OrderStatus
 
-  Product_level Level?    @relation(fields: [levelId], references: [id])
+  Product_level Level?   @relation(fields: [levelId], references: [id])
   masters       Master[] @relation("OrderMaster")
   tools         Tool[]   @relation("OrderTool")
   Tool          Tool[]
@@ -213,4 +221,9 @@ enum OrderStatus {
   IN_PROGRESS
   DONE
   CANCELED
+}
+
+enum Status {
+  PANDING
+  ACTIVE
 }

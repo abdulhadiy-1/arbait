@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { CapacityService } from './capacity.service';
 import { CreateCapacityDto } from './dto/create-capacity.dto';
 import { UpdateCapacityDto } from './dto/update-capacity.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('capacity')
 export class CapacityController {
@@ -12,9 +22,27 @@ export class CapacityController {
     return this.capacityService.create(createCapacityDto);
   }
 
-  @Get()
-  findAll() {
-    return this.capacityService.findAll();
+   @Get()
+ @ApiQuery({
+    name: 'page',
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+  })
+  findAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('filter') filter: string,
+  ) {
+    return this.capacityService.findAll(+page, +limit, filter);
   }
 
   @Get(':id')
@@ -23,7 +51,10 @@ export class CapacityController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCapacityDto: UpdateCapacityDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCapacityDto: UpdateCapacityDto,
+  ) {
     return this.capacityService.update(id, updateCapacityDto);
   }
 

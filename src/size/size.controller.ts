@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { SizeService } from './size.service';
 import { CreateSizeDto } from './dto/create-size.dto';
 import { UpdateSizeDto } from './dto/update-size.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('size')
 export class SizeController {
@@ -13,8 +23,22 @@ export class SizeController {
   }
 
   @Get()
-  findAll() {
-    return this.sizeService.findAll();
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+  })
+  findAll(@Query("page") page: string, @Query("limit") limit: string, @Query("filter") filter: string,) {
+    return this.sizeService.findAll(+page, +limit, filter);
   }
 
   @Get(':id')

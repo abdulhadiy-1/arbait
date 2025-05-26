@@ -11,8 +11,16 @@ export class CapacityService {
     return capacity;
   }
 
-  async findAll() {
-    let capacitys = await this.client.capacity.findMany();
+  async findAll(page: number, limit: number, filter: string) {
+    let take = limit || 10;
+    let skip = page ? (page - 1) * take : 0;
+    let where: any = {};
+    if (filter) {
+      where.name = {
+        startsWith: filter,
+      };
+    }
+    let capacitys = await this.client.capacity.findMany({ where, skip, take });
     return capacitys;
   }
 

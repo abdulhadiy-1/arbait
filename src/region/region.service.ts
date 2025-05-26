@@ -11,8 +11,16 @@ export class RegionService {
     return region;
   }
 
-  async findAll() {
-    let regions = await this.client.region.findMany();
+  async findAll(page: number, limit: number, filter: string) {
+    let take = limit || 10;
+    let skip = page ? (page - 1) * limit : 0;
+    let where: any = {};
+    if (filter) {
+      where.name = {
+        startsWith: filter,
+      };
+    }
+    let regions = await this.client.region.findMany({ where, take, skip });
     return regions;
   }
 
