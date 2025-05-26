@@ -1,8 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateDistrictDto {
   @ApiProperty()
   @IsString()
-  name: string;
+  name_en: string;
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  name_uz?: string;
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  name_ru?: string;
 }

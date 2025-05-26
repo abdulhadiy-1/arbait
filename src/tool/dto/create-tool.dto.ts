@@ -15,7 +15,15 @@ export class CreateToolDto {
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  name: string;
+  name_en: string;
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  name_uz?: string;
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  name_ru?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

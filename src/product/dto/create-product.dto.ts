@@ -16,7 +16,15 @@ export class CreateProductDto {
   @IsString()
   @MinLength(1)
   @MaxLength(30)
-  name: string;
+  name_en: string;
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  name_uz?: string;
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  name_ru?: string;
 
   @ApiProperty()
   @IsBoolean()
@@ -39,10 +47,9 @@ export class CreateProductDto {
   @Min(0)
   price_daily: number;
 
-@ApiProperty()
-@IsArray()
-@IsOptional()
-@IsUUID('4', { each: true }) 
-tools?: string[];
-
+  @ApiProperty()
+  @IsArray()
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  tools?: string[];
 }
